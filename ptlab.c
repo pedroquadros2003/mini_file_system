@@ -1,8 +1,9 @@
+#include "counter_mutex.h"
+#include "counter_unsafe.h"
 #include "io_handling.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "counter_unsafe.h"
 
 int main(int argc, char **argv) {
 
@@ -16,29 +17,34 @@ int main(int argc, char **argv) {
   char *counter_mode = argv[2];
 
   if (!strcmp(program2execute, "counter") && !strcmp(counter_mode, "unsafe")) {
-    printf("Running counter unsafe...\n\n");
+    printf("Running counter unsafe...\n");
 
-    counter_unsafe_stats_s stats_out;
+    counter_unsafe_stats_t stats_out;
 
     stats_out.mode = counter_mode;
     stats_out.threads = atoi(argv[3]);
     stats_out.iterations = atoi(argv[4]);
 
+    pt_counter_unsafe(stats_out.threads, stats_out.iterations, &stats_out);
     print_counter_unsafe_stats(&stats_out);
 
   } else if (!strcmp(program2execute, "counter") &&
              !strcmp(counter_mode, "mutex")) {
-    printf("Running counter mutex...\n\n");
+    printf("Running counter mutex...\n");
 
-    counter_unsafe_stats_s stats_out;
+    counter_mutex_stats_t stats_out;
 
     stats_out.mode = counter_mode;
     stats_out.threads = atoi(argv[3]);
     stats_out.iterations = atoi(argv[4]);
 
+    pt_counter_mutex(stats_out.threads, stats_out.iterations, &stats_out);
+    print_counter_mutex_stats(&stats_out);
+
   } else if (!strcmp(program2execute, "rwlock")) {
     printf("Running rwlock...\n\n");
 
+    /*
     char *mode = argv[1];
 
     int num_readers = atoi(argv[2]);
@@ -46,9 +52,9 @@ int main(int argc, char **argv) {
     int num_writers = atoi(argv[3]);
 
     int num_iterations = atoi(argv[4]);
-
+    */
   } else {
-    printf("Invalid input\n");
+    printf("Invalid input: input should be either counter or rwlock\n");
     return EXIT_FAILURE;
   }
 
