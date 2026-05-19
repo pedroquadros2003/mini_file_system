@@ -1,31 +1,34 @@
-CC          := gcc
-CFLAGS      := -Werror -Wall -Wextra -pedantic -std=c11 -D_XOPEN_SOURCE=500 -Werror=vla
-LDFLAGS     := -lrt -lpthread -pthread
+CC = gcc
+CFLAGS = -Wextra -g $(shell pkg-config fuse3 --cflags)
+LDLIBS = $(shell pkg-config fuse3 --libs)
 
-BUILD       := ./build
-OBJ_DIR     := $(BUILD)/objects
-APP_DIR     := $(BUILD)
+BUILD   := ./build
+OBJ_DIR := $(BUILD)/objects
+APP_DIR := $(BUILD)
 
-SRC := ptlab.c counter_unsafe.c counter_mutex.c io_handling.c
+TARGET := minifs_ro 
 
-TARGET := ptlab
+SRC := minifs_ro.c
 
 OBJS := $(SRC:%.c=$(OBJ_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
 all: build $(APP_DIR)/$(TARGET)
 
+# Compilação dos objetos
 $(OBJ_DIR)/%.o: %.c
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) -c $< -MMD -o $@
+	$(CC) $(CFLAGS) -MMD -c $< -o $@
 
+# Linkagem final
 $(APP_DIR)/$(TARGET): $(OBJS)
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
+# Inclusão automática das dependências
 -include $(DEPS)
 
-.PHONY: all build clean debug release info test
+.PHONY: all build clean debug release info
 
 build:
 	@mkdir -p $(APP_DIR)
@@ -38,17 +41,11 @@ release: CFLAGS += -O2
 release: all
 
 clean:
-	-@rm -rvf $(OBJ_DIR)/*
-	-@rm -rvf $(APP_DIR)/*
+	-@rm -rf $(BUILD)
 
 info:
-	@echo "[*] Application dir: ${APP_DIR}"
-	@echo "[*] Object dir:      ${OBJ_DIR}"
-	@echo "[*] Sources:         ${SRC}"
-	@echo "[*] Objects:         ${OBJS}"
-	@echo "[*] Dependencies:    ${DEPS}"
-
-test: all
-	$(APP_DIR)/$(TARGET) counter unsafe 4 100000
-	$(APP_DIR)/$(TARGET) counter mutex 4 100000
-	$(APP_DIR)/$(TARGET) rwlock 4 2 10000
+	@echo "[*] Application dir: $(APP_DIR)"
+	@echo "[*] Object dir:      $(OBJ_DIR)"
+	@echo "[*] Sources:         $(SRC)"
+	@echo "[*] Objects:         $(OBJS)"
+	@echo "[*] Dependencies:    $(DEPS)"
