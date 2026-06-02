@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 CC = gcc
 CFLAGS = -Wextra -g $(shell pkg-config fuse3 --cflags)
 LDLIBS = $(shell pkg-config fuse3 --libs)
@@ -49,3 +50,15 @@ info:
 	@echo "[*] Sources:         $(SRC)"
 	@echo "[*] Objects:         $(OBJS)"
 	@echo "[*] Dependencies:    $(DEPS)"
+=======
+CC          := gcc
+#CFLAGS      := -Wall -Wextra -pedantic -g $(shell pkg-config fuse3 --cflags)
+CFLAGS      := -Wall `pkg-config fuse3 --cflags --libs` -o minifs_ro
+
+minifs_ro:	minifs_ro.c Makefile
+	$(CC) minifs_ro.c -o minifs_ro $(CFLAGS)
+
+mount:		minifs_ro
+	mkdir mnt/
+	./minifs_ro -f mnt/
+>>>>>>> ef6f0dc2b64d65a78fe7804647c5b6f4680544c0
