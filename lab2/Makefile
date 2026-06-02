@@ -51,5 +51,8 @@ info:
 test: all
 	mkdir -p benchdir
 	$(MAKE)
-	$(APP_DIR)/$(TARGET) benchdir 4 16 1000
+	$(APP_DIR)/$(TARGET)  benchdir 1 4 10
+	$(APP_DIR)/$(TARGET)  benchdir 2 8 100
+	$(APP_DIR)/$(TARGET)  benchdir 4 16 1000
+	$(APP_DIR)/$(TARGET)  benchdir 8 32 5000
 	ls benchdir
